@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Event Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #mapid {
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="mapid"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map and set its view to Malaysia
+        var map = L.map('mapid').setView([4.2105, 101.9758], 6);
+
+        // Add the tile layer from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Function to create a form popup
+        function createFormPopup() {
+            var popupContent = 
+                '<form id="inputForm">' +
+                'Event Name:<br><input type="text" id="eventName"><br>' +
+                'Date:<br><input type="date" id="eventDate"><br>' +
+                'Time:<br><input type="time" id="eventTime"><br>' +
+                '<input type="button" value="Save" id="saveButton">' +
+                '</form>';
+            return popupContent;
+        }
+
+        // Event listener for map clicks
+        map.on('click', function(e) {
+            var popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent(createFormPopup())
+                .openOn(map);
+
+            document.getElementById('saveButton').addEventListener('click', function() {
+                var eventName = document.getElementById('eventName').value;
+                var eventDate = document.getElementById('eventDate').value;
+                var eventTime = document.getElementById('eventTime').value;
+
+                // Create marker and bind popup with event details
+                L.marker(e.latlng).addTo(map)
+                    .bindPopup('<b>' + eventName + '</b><br>Date: ' + eventDate + '<br>Time: ' + eventTime);
+
+                // Close the form popup
+                map.closePopup();
+            });
+        });
+    </script>
+</body>
+</html>
